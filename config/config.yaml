@@ -60,7 +60,7 @@ dpo_offline:
 
 dpo_online:
   num_examples: 1000
-  output_dir: "./qwen-dpo-online-alpaca"
+  output_dir: "./qwen-dpo-online-alpaca/checkpoint-15"
   save_dir: "./qwen-dpo-online-alpaca"
   num_train_epochs: 1
   per_device_train_batch_size: 8
@@ -76,7 +76,7 @@ dpo_online:
   judge_model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
 eval:
-  model_path: "/home/mapandya/projects/Qwen_VL_Inference/DPO-Alpaca-Post-Training/qwen-dpo-online-alpaca/checkpoint-15"  # or DPO output, override with EVAL_MODEL_PATH
+  model_path: "MargiPandya/qwen1.5-1.8b-dpo-online-alpaca"  # or DPO output, override with EVAL_MODEL_PATH
   num_examples: 20
   max_new_tokens: 256
   batch_size: 4

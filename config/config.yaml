@@ -1,0 +1,84 @@
+# DPO Alpaca pipeline config
+# Override with env vars: SFT_MODEL_PATH, SFT_OUTPUT_DIR, WANDB_RUN_NAME, HF_TOKEN, CONFIG_PATH
+
+models:
+  base_model_id: "Qwen/Qwen1.5-1.8B"
+  sft_model_path: "./qwen-sft-alpaca/checkpoint-102"
+  preference_dataset: "MargiPandya/example-preference-dataset"
+  alpaca_dataset: "tatsu-lab/alpaca"
+  dpo_adapter: "MargiPandya/dpo-final-model"  # for online DPO
+
+sft:
+  output_dir: "./qwen-sft-alpaca"
+  num_examples: 15000
+  per_device_train_batch_size: 4 # Adjust based on GPU memory
+  gradient_accumulation_steps: 4
+  learning_rate: 2.0e-5
+  lr_scheduler_type: "cosine"
+  warmup_steps: 100
+  max_length: 512
+  bf16: true
+  num_train_epochs: 3
+  logging_steps: 10
+  eval_steps: 30
+  run_name: "sft-alpaca"
+  lora:
+    r: 16
+    lora_alpha: 32
+    target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+preference:
+  num_examples: 5000
+  generator_model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+  judge_model: "tiiuae/falcon-7b-instruct"
+  generate_batch_size: 256
+  judge_batch_size: 256
+  max_new_tokens: 128
+  generator_temp: 0.7
+  generator_temp_alt: 1.2
+  judge_temp: 0.1
+  hub_repo: "MargiPandya/DPO-Alpaca-preference-dataset"
+  output_dir: "preference_data"
+
+dpo_offline:
+  output_dir: "./qwen-dpo-offline-alpaca"
+  num_train_epochs: 2
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 1.0e-5
+  lr_scheduler_type: "cosine"
+  warmup_steps: 100
+  beta: 0.1
+  max_length: 1024
+  max_prompt_length: 512
+  bf16: true
+  logging_steps: 5
+  eval_steps: 20
+  save_steps: 100
+  save_total_limit: 2
+  run_name: "dpo-offline-alpaca"
+
+dpo_online:
+  num_examples: 1000
+  output_dir: "./qwen-dpo-online-alpaca"
+  save_dir: "./qwen-dpo-online-alpaca"
+  num_train_epochs: 1
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-5
+  beta: 0.1
+  max_length: 512
+  max_new_tokens: 128
+  logging_steps: 3
+  save_steps: 40
+  save_total_limit: 3
+  run_name: "dpo-online-alpaca"
+  judge_model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+eval:
+  model_path: "/home/mapandya/projects/Qwen_VL_Inference/DPO-Alpaca-Post-Training/qwen-dpo-online-alpaca/checkpoint-15"  # or DPO output, override with EVAL_MODEL_PATH
+  num_examples: 20
+  max_new_tokens: 256
+  batch_size: 4
+  temperature: 0.7
+  seed: 42

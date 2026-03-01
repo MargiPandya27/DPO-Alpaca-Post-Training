@@ -1,0 +1,15 @@
+# DPO_Alpaca - DPO training pipeline for Alpaca
+# Install: pip install -r requirements.txt
+
+torch>=2.0.0
+transformers>=4.36.0
+trl>=0.7.0
+peft>=0.7.0
+datasets>=2.16.0
+bitsandbytes>=0.41.0
+distilabel>=1.0.0
+tqdm>=4.66.0
+wandb>=0.16.0
+pyyaml>=6.0
+bert_score>=0.3.13
+huggingface_hub>=0.20.0
